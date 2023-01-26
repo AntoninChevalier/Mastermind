@@ -1,0 +1,120 @@
+//Jeu Mastermind en C#
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Projet_plaisir_Mastermind
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] reponse = Generer_Tab_Reponse();
+            int[][] plateau = Generer_Tab();
+            bool test = true;
+            int ligne = 0;
+            while(test)
+            {
+                Affiche_Tab(plateau);
+                plateau = Remplir_Tab(plateau, ligne);
+                plateau = Verifier_Tab(plateau, reponse, ligne);
+                if (plateau[ligne][5] == 4) { Console.WriteLine("\nVous avez gagnez !");test = false;}
+                else if (plateau[9][3] != 0) {
+                    Affiche_Tab(plateau); Console.WriteLine("\nPerdu..");
+                    Console.WriteLine("La réponse était : " + reponse[0] + " " + reponse[1] + " " + reponse[2] + " " + reponse[3]);
+                    test = false; }
+                ligne++;
+            }
+            
+            Console.ReadLine();
+        }
+
+        static int[] Generer_Tab_Reponse()
+        {
+            Random r = new Random();
+            int[] reponse = new int[4];
+            for (int i=0; i<4; i++)
+            { reponse[i] = r.Next(1,9); }
+            return reponse;
+        }
+        static int[][] Generer_Tab()
+        {
+            int[][] tab = new int[10][];
+            int[] sous_tab = { 0, 0, 0, 0, 0, 0 };
+            for (int i = 0; i < 10; i++)
+            {
+                sous_tab = (int[])sous_tab.Clone();
+                tab[i] = sous_tab;
+            }
+            return tab;
+        }
+        static int[][] Remplir_Tab(int[][] tab,int ligne)
+        {
+            int nb_saisi;
+            for(int i = 0; i < 4; i++)
+            {
+                do
+                {
+                    Console.Write("Saisir un nombre entre 1 et 8 :  ");
+                    nb_saisi = Convert.ToInt32(Console.ReadLine());
+                } while (nb_saisi<1 || nb_saisi>8);
+                tab[ligne][i] = nb_saisi;
+            }
+            return tab;
+        }
+        static int[][] Verifier_Tab(int[][] tab, int[] reponse, int ligne)
+        {
+            int compteur_position = 0;
+            for (int i=0;i<4;i++)
+            {
+                if (reponse[i] == tab[ligne][i])
+                {
+                    compteur_position++;
+                }
+            }
+            IEnumerable<int> inter = reponse.Intersect(tab[ligne]);
+            tab[ligne][4] = inter.Count();
+            tab[ligne][5] = compteur_position;
+            return tab;
+        }
+
+        static void Affiche_Tab(int[][] tab)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                Console.Write("|");
+                for (int i = 0; i < 6; i++)
+                {
+                    if (i < 4){ Couleur(tab[j][i]); Console.Write(tab[j][i]); Console.ForegroundColor=ConsoleColor.White;Console.Write("|"); }
+                    else if (i==4) { Console.Write("  "+tab[j][i] + "|"); }
+                    else { Console.Write(tab[j][i]); }
+
+                }
+                Console.WriteLine();
+            }
+        }
+        static void Couleur(int nb)
+        {
+            ConsoleColor couleur = Console.ForegroundColor;
+            switch (nb) 
+            {
+                case 1:couleur = ConsoleColor.Red ;break;
+                case 2: couleur = ConsoleColor.Blue; break;
+                case 3: couleur = ConsoleColor.Green; break;
+                case 4: couleur = ConsoleColor.Yellow; break;
+                case 5: couleur = ConsoleColor.Magenta; break;
+                case 6: couleur = ConsoleColor.Cyan; break;
+                case 7: couleur = ConsoleColor.DarkYellow; break;
+                case 8: couleur = ConsoleColor.DarkBlue;break;
+                default: couleur = ConsoleColor.White; break;
+            }
+            Console.ForegroundColor = couleur;
+        }
+    }
+}
